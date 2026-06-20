@@ -1,0 +1,586 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>STARK.AC — Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold: #f0a500;
+      --gold-dim: #c47f00;
+      --gold-glow: #f0a50022;
+      --gold-border: #f0a50033;
+      --bg: #080808;
+      --bg2: #0e0e0e;
+      --bg3: #141414;
+      --sidebar: #0a0a0a;
+      --red: #e74c3c;
+      --green: #2ecc71;
+      --text: #ffffff;
+      --text-dim: #555;
+      --text-mid: #888;
+      --border: #1a1a1a;
+    }
+    body.light {
+      --bg: #f0f0f0;
+      --bg2: #ffffff;
+      --bg3: #e8e8e8;
+      --sidebar: #1a1a1a;
+      --text: #111111;
+      --text-dim: #999;
+      --text-mid: #555;
+      --border: #dddddd;
+    }
+    .theme-wrap { position: relative; }
+    .theme-dropdown {
+      display: none;
+      position: absolute;
+      bottom: 44px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #1a1a1a;
+      border: 1px solid #2a2a2a;
+      border-radius: 8px;
+      overflow: hidden;
+      min-width: 110px;
+      box-shadow: 0 4px 20px #00000088;
+      z-index: 999;
+    }
+    .theme-dropdown.open { display: block; }
+    .theme-option {
+      padding: 10px 16px;
+      font-size: 13px;
+      cursor: pointer;
+      color: #888;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: background 0.15s;
+    }
+    .theme-option:hover { background: #252525; color: #fff; }
+    .theme-option.selected { color: var(--gold); background: var(--gold-glow); }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: var(--bg); color: var(--text); font-family: 'Inter', sans-serif; display: flex; height: 100vh; overflow: hidden; }
+
+    /* ── SIDEBAR ── */
+    .sidebar {
+      width: 220px;
+      min-width: 220px;
+      background: var(--sidebar);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+      overflow-y: auto;
+    }
+
+    .sidebar-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 20px 18px 16px;
+      border-bottom: 1px solid var(--border);
+    }
+    .logo-svg { width: 32px; height: 32px; filter: drop-shadow(0 0 6px #f0a500aa); flex-shrink: 0; }
+    .logo-text { font-family: 'Rajdhani', sans-serif; font-size: 20px; font-weight: 700; letter-spacing: 2px; color: var(--gold); }
+    .logo-text span { color: #fff; opacity: 0.35; }
+
+    .sidebar-section { padding: 18px 14px 4px; }
+    .sidebar-section-label {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-dim);
+      text-transform: uppercase;
+      letter-spacing: 1.5px;
+      padding: 0 6px;
+      margin-bottom: 4px;
+    }
+
+    .nav-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 10px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      color: var(--text-mid);
+      transition: all 0.15s;
+      user-select: none;
+      margin-bottom: 1px;
+    }
+    .nav-item:hover { background: var(--bg3); color: #ccc; }
+    .nav-item.active { background: var(--gold-glow); color: var(--gold); border: 1px solid var(--gold-border); }
+    .nav-item .icon { font-size: 15px; width: 18px; text-align: center; flex-shrink: 0; }
+    .nav-item .label { flex: 1; }
+    .nav-item .arrow { font-size: 11px; color: var(--text-dim); }
+
+    .nav-sub { padding-left: 14px; }
+    .nav-sub .nav-item { font-size: 12px; padding: 7px 10px; }
+
+    .sidebar-bottom {
+      margin-top: auto;
+      border-top: 1px solid var(--border);
+      padding: 12px 14px;
+      display: flex;
+      gap: 16px;
+      justify-content: center;
+    }
+    .sidebar-bottom .icon-btn {
+      color: var(--text-dim);
+      font-size: 16px;
+      cursor: pointer;
+      padding: 6px;
+      border-radius: 6px;
+      transition: all 0.15s;
+    }
+    .sidebar-bottom .icon-btn:hover { color: var(--gold); background: var(--gold-glow); }
+
+    /* ── MAIN ── */
+    .main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+    .topbar {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--border);
+      padding: 0 28px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-shrink: 0;
+    }
+    .topbar-title { font-family: 'Rajdhani', sans-serif; font-size: 16px; font-weight: 600; color: #aaa; letter-spacing: 1px; }
+    .topbar-title span { color: var(--gold); }
+
+    .content { flex: 1; overflow-y: auto; padding: 28px; }
+
+    /* ── PAGES ── */
+    .page { display: none; }
+    .page.active { display: block; }
+
+    /* ── COMPONENTS ── */
+    .box { background: var(--bg2); border: 1px solid var(--border); border-radius: 8px; padding: 22px; margin-bottom: 18px; }
+    .section-title {
+      font-family: 'Rajdhani', sans-serif; font-size: 12px; font-weight: 600;
+      color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px;
+      margin-bottom: 16px; display: flex; align-items: center; gap: 10px;
+    }
+    .section-title::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+    .btn {
+      background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+      color: #000; border: none; padding: 10px 22px; border-radius: 6px;
+      cursor: pointer; font-size: 12px; font-weight: 700;
+      font-family: 'Rajdhani', sans-serif; letter-spacing: 1.5px; text-transform: uppercase;
+      transition: all 0.2s; box-shadow: 0 0 14px var(--gold-glow);
+    }
+    .btn:hover { box-shadow: 0 0 24px #f0a50044; transform: translateY(-1px); }
+    .btn.ghost { background: transparent; color: var(--gold); border: 1px solid var(--gold-border); box-shadow: none; }
+    .btn.ghost:hover { background: var(--gold-glow); }
+    .btn.danger { background: transparent; color: var(--red); border: 1px solid #e74c3c33; box-shadow: none; font-size: 11px; padding: 5px 12px; }
+
+    input[type=text], select {
+      background: var(--bg3); border: 1px solid #222; color: #fff;
+      padding: 10px 14px; border-radius: 6px; font-size: 13px;
+      outline: none; font-family: 'Inter', sans-serif; transition: border-color 0.2s;
+    }
+    input[type=text]:focus, select:focus { border-color: var(--gold-border); }
+    input[type=text]::placeholder { color: #333; }
+    select option { background: var(--bg3); }
+
+    .input-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+
+    /* PIN RESULT */
+    .pin-result { margin-top: 16px; background: #0b0f00; border: 1px solid var(--gold-border); border-radius: 8px; padding: 18px; display: none; }
+    .pin-result .plabel { font-size: 10px; color: var(--text-dim); letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+    .pin-result .pcode { font-family: 'Rajdhani', sans-serif; font-size: 34px; font-weight: 700; color: var(--gold); letter-spacing: 8px; }
+    .pin-result .plink { font-size: 12px; color: #444; margin-top: 6px; word-break: break-all; }
+    .copy-btn { background: var(--bg3); color: var(--text-mid); border: 1px solid #222; padding: 5px 12px; border-radius: 5px; cursor: pointer; font-size: 11px; margin-top: 8px; font-family: 'Rajdhani', sans-serif; letter-spacing: 1px; }
+    .copy-btn:hover { border-color: var(--gold-border); color: var(--gold); }
+
+    /* PIN CARDS */
+    .pin-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 7px; padding: 14px 18px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; transition: border-color 0.15s; }
+    .pin-card:hover { border-color: #252525; }
+    .pcode { font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 700; letter-spacing: 3px; color: var(--gold); }
+    .psuspect { color: var(--text-mid); font-size: 12px; margin-top: 2px; }
+    .ptime { color: #333; font-size: 11px; margin-top: 1px; }
+    .card-actions { display: flex; align-items: center; gap: 8px; }
+
+    .badge { padding: 3px 10px; border-radius: 4px; font-size: 10px; font-family: 'Rajdhani', sans-serif; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; }
+    .badge.waiting { background: #191200; border: 1px solid #f0a50033; color: var(--gold); }
+    .badge.scanned { background: #091a0f; border: 1px solid #2ecc7133; color: var(--green); }
+
+    .view-btn { background: transparent; color: var(--text-dim); border: 1px solid #252525; padding: 5px 12px; border-radius: 5px; cursor: pointer; font-size: 11px; font-family: 'Rajdhani', sans-serif; letter-spacing: 1px; transition: all 0.15s; }
+    .view-btn:hover { border-color: var(--gold-border); color: var(--gold); }
+
+    .empty { color: #333; text-align: center; padding: 40px; font-size: 13px; }
+
+    /* MEMBERS */
+    .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 14px; }
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
+    .form-group label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+    .member-card { background: var(--bg3); border: 1px solid var(--border); border-radius: 7px; padding: 13px 18px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; }
+    .member-name { font-weight: 600; font-size: 14px; }
+    .member-meta { font-size: 11px; color: #333; margin-top: 2px; }
+    .role-badge { font-size: 10px; font-family: 'Rajdhani', sans-serif; letter-spacing: 1px; padding: 3px 10px; border-radius: 4px; text-transform: uppercase; }
+    .role-admin { background: #1a0f00; border: 1px solid #f0a50033; color: var(--gold); }
+    .role-moderator { background: #0a0d1a; border: 1px solid #3498db33; color: #3498db; }
+    .role-viewer { background: #111; border: 1px solid #33333333; color: #555; }
+
+    /* MODAL */
+    .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: #000000dd; z-index: 500; overflow-y: auto; }
+    .modal-content { background: var(--bg2); border: 1px solid var(--gold-border); border-radius: 10px; padding: 28px; width: 700px; max-width: 95%; margin: 36px auto; }
+    .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+    .modal-header h2 { font-family: 'Rajdhani', sans-serif; font-size: 18px; color: var(--gold); letter-spacing: 1px; }
+
+    .verdict { padding: 14px 18px; border-radius: 7px; font-size: 16px; font-weight: 700; font-family: 'Rajdhani', sans-serif; margin-bottom: 18px; }
+    .verdict.clean { background: #091a0f; border: 1px solid #2ecc7133; border-left: 3px solid var(--green); color: var(--green); }
+    .verdict.flagged { background: #1a0909; border: 1px solid #e74c3c33; border-left: 3px solid var(--red); color: var(--red); }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); gap: 10px; margin-bottom: 18px; }
+    .stat { background: var(--bg3); border: 1px solid var(--border); border-radius: 7px; padding: 13px; text-align: center; }
+    .stat .num { font-size: 24px; font-weight: 700; font-family: 'Rajdhani', sans-serif; color: var(--gold); }
+    .stat .num.red { color: var(--red); }
+    .stat .lbl { font-size: 10px; color: var(--text-dim); margin-top: 3px; text-transform: uppercase; letter-spacing: 1px; }
+
+    .info-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid var(--border); font-size: 12px; }
+    .info-row .k { color: var(--text-dim); }
+    .info-row .v { color: #fff; }
+
+    .flag-item { background: #110808; border-left: 2px solid var(--red); border-radius: 5px; padding: 9px 13px; margin-bottom: 7px; }
+    .flag-item .ft { font-size: 10px; color: var(--red); text-transform: uppercase; letter-spacing: 1.5px; }
+    .flag-item .fn { font-size: 13px; color: #fff; margin-top: 2px; }
+    .flag-item .fr { font-size: 11px; color: var(--text-mid); }
+
+    /* STRINGS / CUSTOM GUI placeholder */
+    .coming-soon { text-align: center; padding: 80px 20px; color: var(--text-dim); }
+    .coming-soon .big { font-family: 'Rajdhani', sans-serif; font-size: 48px; color: #1a1a1a; margin-bottom: 12px; }
+    .coming-soon p { font-size: 13px; }
+  </style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<div class="sidebar">
+  <div class="sidebar-logo">
+    <svg class="logo-svg" viewBox="0 0 100 80" fill="none">
+      <defs>
+        <linearGradient id="g1" x1="0" y1="0" x2="100" y2="80" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#ffe066"/>
+          <stop offset="50%" stop-color="#f0a500"/>
+          <stop offset="100%" stop-color="#c47f00"/>
+        </linearGradient>
+        <filter id="glow"><feGaussianBlur stdDeviation="2.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+      </defs>
+      <path d="M5 10 L50 58 L95 10 L85 10 L50 46 L15 10 Z" fill="url(#g1)" filter="url(#glow)"/>
+      <path d="M20 10 L50 40 L80 10 L70 10 L50 30 L30 10 Z" fill="url(#g1)" opacity="0.7"/>
+      <path d="M35 58 L50 72 L65 58 L58 58 L50 65 L42 58 Z" fill="url(#g1)" filter="url(#glow)"/>
+    </svg>
+    <div class="logo-text">STARK<span>.AC</span></div>
+  </div>
+
+  <!-- SERVICES -->
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Services</div>
+    <div class="nav-item active" onclick="showPage('dashboard', this)">
+      <span class="icon">⊞</span><span class="label">Dashboard</span>
+    </div>
+    <div class="nav-item" onclick="showPage('pins', this)">
+      <span class="icon">⚿</span><span class="label">Pins</span>
+    </div>
+    <div class="nav-item" onclick="showPage('members', this)">
+      <span class="icon">👥</span><span class="label">Members</span>
+    </div>
+    <div class="nav-item" onclick="showPage('strings', this)">
+      <span class="icon">≡</span><span class="label">Strings</span>
+    </div>
+    <div class="nav-item" onclick="showPage('customgui', this)">
+      <span class="icon">◈</span><span class="label">Custom GUI</span>
+    </div>
+  </div>
+
+  <!-- COMMUNITY -->
+  <div class="sidebar-section">
+    <div class="sidebar-section-label">Community</div>
+    <div class="nav-item" onclick="toggleSub('community-sub', this)">
+      <span class="icon">🌐</span><span class="label">Community</span><span class="arrow">›</span>
+    </div>
+    <div class="nav-sub" id="community-sub" style="display:none">
+      <div class="nav-item" onclick="showPage('public-configs', this)">
+        <span class="icon">⚙</span><span class="label">Public Configs</span>
+      </div>
+      <div class="nav-item" onclick="showPage('public-strings', this)">
+        <span class="icon">T</span><span class="label">Public Strings</span>
+      </div>
+      <div class="nav-item" onclick="showPage('public-guis', this)">
+        <span class="icon">◧</span><span class="label">Public GUIs</span>
+      </div>
+    </div>
+  </div>
+
+
+
+  <div class="sidebar-bottom">
+    <div class="icon-btn" title="Notifications">🔔</div>
+    <div class="icon-btn" title="Network">🌐</div>
+    <div class="icon-btn" onclick="loadPins()" title="Refresh">↻</div>
+    <div class="theme-wrap">
+      <div class="icon-btn" onclick="toggleThemeMenu()" title="Theme">◑</div>
+      <div class="theme-dropdown" id="themeDropdown">
+        <div class="theme-option" id="opt-light" onclick="setTheme('light')">☀ Light</div>
+        <div class="theme-option selected" id="opt-dark" onclick="setTheme('dark')">● Dark</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-title" id="topbar-title"><span>Dashboard</span></div>
+  </div>
+
+  <div class="content">
+
+    <!-- DASHBOARD -->
+    <div class="page active" id="page-dashboard">
+      <div class="box">
+        <div class="section-title">All Scan Sessions</div>
+        <div id="pinsList"><div class="empty">No scans yet.</div></div>
+      </div>
+    </div>
+
+    <!-- PINS -->
+    <div class="page" id="page-pins">
+      <div class="box">
+        <div class="section-title">Create New Scan PIN</div>
+        <div class="input-row">
+          <input type="text" id="suspectName" placeholder="Suspect name (e.g. PlayerXYZ)" style="width:260px" />
+          <button class="btn" onclick="createPin()">Generate PIN & Link</button>
+        </div>
+        <div class="pin-result" id="pinResult">
+          <div class="plabel">PIN Code</div>
+          <div class="pcode" id="pinCode"></div>
+          <div class="plink" id="pinLink"></div>
+          <button class="copy-btn" onclick="copyLink()">Copy Link</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MEMBERS -->
+    <div class="page" id="page-members">
+      <div class="box">
+        <div class="section-title">Add Member</div>
+        <div class="form-grid">
+          <div class="form-group">
+            <label>Username</label>
+            <input type="text" id="memberName" placeholder="e.g. StaffMember01" />
+          </div>
+          <div class="form-group">
+            <label>Role</label>
+            <select id="memberRole">
+              <option value="admin">Admin</option>
+              <option value="moderator">Moderator</option>
+              <option value="viewer">Viewer</option>
+            </select>
+          </div>
+        </div>
+        <button class="btn" onclick="addMember()">Add Member</button>
+      </div>
+      <div class="box">
+        <div class="section-title">Team Members</div>
+        <div id="membersList"><div class="empty">No members added yet.</div></div>
+      </div>
+    </div>
+
+    <!-- STRINGS -->
+    <div class="page" id="page-strings">
+      <div class="coming-soon"><div class="big">≡</div><p>Strings — Coming Soon</p></div>
+    </div>
+
+    <!-- CUSTOM GUI -->
+    <div class="page" id="page-customgui">
+      <div class="coming-soon"><div class="big">◈</div><p>Custom GUI — Coming Soon</p></div>
+    </div>
+
+    <!-- COMMUNITY SUBS -->
+    <div class="page" id="page-public-configs">
+      <div class="coming-soon"><div class="big">⚙</div><p>Public Configs — Coming Soon</p></div>
+    </div>
+    <div class="page" id="page-public-strings">
+      <div class="coming-soon"><div class="big">T</div><p>Public Strings — Coming Soon</p></div>
+    </div>
+    <div class="page" id="page-public-guis">
+      <div class="coming-soon"><div class="big">◧</div><p>Public GUIs — Coming Soon</p></div>
+    </div>
+
+
+
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal" id="modal">
+  <div class="modal-content">
+    <div class="modal-header">
+      <h2 id="modal-title">Scan Result</h2>
+      <button class="btn danger" onclick="closeModal()">✕ Close</button>
+    </div>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<script>
+const API = 'http://localhost:3000';
+let members = JSON.parse(localStorage.getItem('stark_members') || '[]');
+
+function showPage(name, el) {
+  document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('page-' + name).classList.add('active');
+  if (el) el.classList.add('active');
+  const titles = {
+    dashboard: 'Dashboard', pins: 'Pins', members: 'Members',
+    strings: 'Strings', customgui: 'Custom GUI', support: 'Support',
+    'stark-v3': 'STARK V3', resources: 'Resources',
+    'public-configs': 'Public Configs', 'public-strings': 'Public Strings', 'public-guis': 'Public GUIs'
+  };
+  document.getElementById('topbar-title').innerHTML = `<span>${titles[name] || name}</span>`;
+}
+
+function toggleSub(id, el) {
+  const sub = document.getElementById(id);
+  const arrow = el.querySelector('.arrow');
+  if (sub.style.display === 'none') {
+    sub.style.display = 'block';
+    if (arrow) arrow.textContent = '⌄';
+  } else {
+    sub.style.display = 'none';
+    if (arrow) arrow.textContent = '›';
+  }
+}
+
+async function createPin() {
+  const suspect = document.getElementById('suspectName').value || 'Unknown';
+  try {
+    const res = await fetch(`${API}/api/create-pin`, { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify({ suspect }) });
+    const data = await res.json();
+    document.getElementById('pinCode').textContent = data.pin;
+    document.getElementById('pinLink').textContent = data.link;
+    document.getElementById('pinResult').style.display = 'block';
+    loadPins();
+  } catch(e) { alert('Server not reachable.'); }
+}
+
+function copyLink() {
+  navigator.clipboard.writeText(document.getElementById('pinLink').textContent);
+  alert('Link copied!');
+}
+
+async function loadPins() {
+  try {
+    const res = await fetch(`${API}/api/pins`);
+    const pins = await res.json();
+    const list = document.getElementById('pinsList');
+    if (!pins.length) { list.innerHTML = '<div class="empty">No scans yet. Go to Pins to create one.</div>'; return; }
+    list.innerHTML = pins.reverse().map(p => `
+      <div class="pin-card">
+        <div>
+          <div class="pcode">${p.pin}</div>
+          <div class="psuspect">👤 ${p.suspect}</div>
+          <div class="ptime">${new Date(p.created).toLocaleString()}</div>
+        </div>
+        <div class="card-actions">
+          <span class="badge ${p.status}">${p.status === 'waiting' ? '⏳ Waiting' : '✅ Scanned'}</span>
+          ${p.status === 'scanned' ? `<button class="view-btn" onclick="viewResult('${p.pin}')">View Result</button>` : ''}
+        </div>
+      </div>`).join('');
+  } catch(e) {}
+}
+
+async function viewResult(pin) {
+  try {
+    const res = await fetch(`${API}/api/result/${pin}`);
+    const data = await res.json();
+    const r = data.result;
+    document.getElementById('modal-title').textContent = `${data.suspect} — ${pin}`;
+    document.getElementById('modal-body').innerHTML = `
+      <div class="verdict ${r.clean ? 'clean' : 'flagged'}">
+        ${r.clean ? '✔ CLEAN — No cheats detected' : `✘ FLAGGED — ${r.flagged.length} item${r.flagged.length!==1?'s':''} found`}
+      </div>
+      <div class="stats-grid">
+        <div class="stat"><div class="num">${r.processes?.length||0}</div><div class="lbl">Processes</div></div>
+        <div class="stat"><div class="num">${r.prefetch?.length||0}</div><div class="lbl">Prefetch</div></div>
+        <div class="stat"><div class="num">${r.recent_files?.length||0}</div><div class="lbl">Recent</div></div>
+        <div class="stat"><div class="num red">${r.flagged?.length||0}</div><div class="lbl">Flagged</div></div>
+      </div>
+      <div class="info-row"><span class="k">PC User</span><span class="v">${r.pc_user}</span></div>
+      <div class="info-row" style="margin-bottom:14px"><span class="k">Scan Time</span><span class="v">${r.scan_time}</span></div>
+      ${r.flagged?.length > 0 ? `
+        <div style="font-size:10px;color:#e74c3c;letter-spacing:2px;text-transform:uppercase;margin-bottom:8px;font-family:Rajdhani,sans-serif">Flagged Items</div>
+        ${r.flagged.map(f=>`<div class="flag-item"><div class="ft">${f.type}</div><div class="fn">${f.name}</div><div class="fr">${f.reason}</div></div>`).join('')}
+      ` : '<p style="color:#2ecc71;font-size:13px">No suspicious items found.</p>'}
+    `;
+    document.getElementById('modal').style.display = 'block';
+  } catch(e) { alert('Could not load result.'); }
+}
+
+function closeModal() { document.getElementById('modal').style.display = 'none'; }
+
+function addMember() {
+  const name = document.getElementById('memberName').value.trim();
+  const role = document.getElementById('memberRole').value;
+  if (!name) return;
+  members.push({ name, role, added: new Date().toLocaleString() });
+  localStorage.setItem('stark_members', JSON.stringify(members));
+  document.getElementById('memberName').value = '';
+  renderMembers();
+}
+
+function removeMember(i) {
+  members.splice(i, 1);
+  localStorage.setItem('stark_members', JSON.stringify(members));
+  renderMembers();
+}
+
+function renderMembers() {
+  const el = document.getElementById('membersList');
+  if (!members.length) { el.innerHTML = '<div class="empty">No members added yet.</div>'; return; }
+  el.innerHTML = members.map((m, i) => `
+    <div class="member-card">
+      <div>
+        <div class="member-name">${m.name}</div>
+        <div class="member-meta">${m.added}</div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px">
+        <span class="role-badge role-${m.role}">${m.role}</span>
+        <button class="btn danger" onclick="removeMember(${i})">Remove</button>
+      </div>
+    </div>`).join('');
+}
+
+loadPins();
+renderMembers();
+setInterval(loadPins, 5000);
+
+// THEME
+function toggleThemeMenu() {
+  document.getElementById('themeDropdown').classList.toggle('open');
+}
+function setTheme(t) {
+  document.body.classList.toggle('light', t === 'light');
+  document.getElementById('opt-light').classList.toggle('selected', t === 'light');
+  document.getElementById('opt-dark').classList.toggle('selected', t === 'dark');
+  document.getElementById('themeDropdown').classList.remove('open');
+  localStorage.setItem('stark_theme', t);
+}
+// close dropdown on outside click
+document.addEventListener('click', e => {
+  if (!e.target.closest('.theme-wrap')) document.getElementById('themeDropdown').classList.remove('open');
+});
+// restore saved theme
+const saved = localStorage.getItem('stark_theme');
+if (saved) setTheme(saved);
+</script>
+</body>
+</html>

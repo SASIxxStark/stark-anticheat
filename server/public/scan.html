@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>STARK.AC — Scan Required</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold: #f0a500;
+      --gold-dim: #c47f00;
+      --gold-glow: #f0a50033;
+      --gold-border: #f0a50044;
+      --bg: #080808;
+      --bg2: #0e0e0e;
+      --bg3: #141414;
+      --red: #e74c3c;
+      --green: #2ecc71;
+      --text-dim: #888;
+      --border: #1e1e1e;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      background: var(--bg);
+      color: #fff;
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .logo-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-bottom: 32px;
+    }
+    .logo-svg { width: 64px; height: 64px; filter: drop-shadow(0 0 14px #f0a500aa); margin-bottom: 12px; }
+    .logo-title { font-family: 'Rajdhani', sans-serif; font-size: 32px; font-weight: 700; letter-spacing: 3px; color: var(--gold); }
+    .logo-title span { color: #fff; opacity: 0.4; }
+    .logo-sub { font-size: 12px; color: #444; letter-spacing: 3px; text-transform: uppercase; margin-top: 4px; }
+
+    .card {
+      background: var(--bg2);
+      border: 1px solid var(--gold-border);
+      border-radius: 12px;
+      padding: 36px 40px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 0 40px #f0a50011;
+    }
+
+    .card-title { font-family: 'Rajdhani', sans-serif; font-size: 18px; font-weight: 600; color: #fff; margin-bottom: 4px; letter-spacing: 1px; }
+    .card-sub { font-size: 13px; color: var(--text-dim); margin-bottom: 28px; }
+
+    .pin-display {
+      background: var(--bg3);
+      border: 1px solid var(--gold-border);
+      border-radius: 8px;
+      padding: 18px;
+      text-align: center;
+      margin-bottom: 28px;
+    }
+    .pin-display .label { font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 8px; }
+    .pin-display .code {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 42px;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 10px;
+      text-shadow: 0 0 20px #f0a50066;
+    }
+
+    .steps { margin-bottom: 28px; }
+    .step { display: flex; align-items: flex-start; gap: 14px; margin-bottom: 16px; }
+    .step-num {
+      background: var(--gold);
+      color: #000;
+      width: 26px; height: 26px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: 'Rajdhani', sans-serif;
+      flex-shrink: 0;
+    }
+    .step-text { color: #aaa; font-size: 13px; line-height: 1.6; padding-top: 3px; }
+    .step-text b { color: #fff; }
+    .step-text .pin-inline {
+      font-family: 'Rajdhani', sans-serif;
+      color: var(--gold);
+      letter-spacing: 3px;
+      font-weight: 700;
+    }
+
+    .dl-btn {
+      display: block;
+      width: 100%;
+      background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+      color: #000;
+      border: none;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 15px;
+      font-weight: 700;
+      font-family: 'Rajdhani', sans-serif;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      cursor: pointer;
+      text-align: center;
+      text-decoration: none;
+      box-shadow: 0 0 24px var(--gold-glow);
+      transition: all 0.2s;
+    }
+    .dl-btn:hover { box-shadow: 0 0 36px #f0a50055; transform: translateY(-1px); }
+
+    .warning {
+      margin-top: 14px;
+      text-align: center;
+      color: #555;
+      font-size: 12px;
+    }
+    .warning b { color: var(--gold-dim); }
+  </style>
+</head>
+<body>
+
+<div class="logo-wrap">
+  <svg class="logo-svg" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <linearGradient id="g1" x1="0" y1="0" x2="100" y2="80" gradientUnits="userSpaceOnUse">
+        <stop offset="0%" stop-color="#ffe066"/>
+        <stop offset="50%" stop-color="#f0a500"/>
+        <stop offset="100%" stop-color="#c47f00"/>
+      </linearGradient>
+      <filter id="glow"><feGaussianBlur stdDeviation="2.5" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    </defs>
+    <path d="M5 10 L50 58 L95 10 L85 10 L50 46 L15 10 Z" fill="url(#g1)" filter="url(#glow)"/>
+    <path d="M20 10 L50 40 L80 10 L70 10 L50 30 L30 10 Z" fill="url(#g1)" opacity="0.7"/>
+    <path d="M35 58 L50 72 L65 58 L58 58 L50 65 L42 58 Z" fill="url(#g1)" filter="url(#glow)"/>
+  </svg>
+  <div class="logo-title">STARK<span>.AC</span></div>
+  <div class="logo-sub">AntiCheat System</div>
+</div>
+
+<div class="card">
+  <div class="card-title">Scan Required</div>
+  <div class="card-sub">Staff has requested a PC scan. Follow the steps below.</div>
+
+  <div class="pin-display">
+    <div class="label">Your PIN Code</div>
+    <div class="code" id="pinDisplay">······</div>
+  </div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-text">Click <b>Download Scanner</b> below</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-text"><b>Right-click</b> STARK V3.exe → <b>Run as Administrator</b></div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-text">Enter your PIN: <span class="pin-inline" id="pinInline">······</span></div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-text">Wait for <b>"Results sent!"</b> then close</div>
+    </div>
+  </div>
+
+  <a class="dl-btn" href="/STARK V3.exe" download="STARK V3.exe">⬇ Download Scanner</a>
+  <p class="warning"><b>⚠ Run as Administrator</b> for full scan accuracy</p>
+</div>
+
+<script>
+  const pin = window.location.pathname.split('/').pop().toUpperCase();
+  document.getElementById('pinDisplay').textContent = pin;
+  document.getElementById('pinInline').textContent = pin;
+</script>
+</body>
+</html>

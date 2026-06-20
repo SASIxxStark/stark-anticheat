@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>STARK.AC — AntiCheat Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --gold: #f0a500;
+      --gold-dim: #c47f00;
+      --gold-glow: #f0a50033;
+      --gold-border: #f0a50044;
+      --bg: #080808;
+      --bg2: #0e0e0e;
+      --bg3: #141414;
+      --red: #e74c3c;
+      --green: #2ecc71;
+      --text: #ffffff;
+      --text-dim: #888;
+      --border: #1e1e1e;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Inter', sans-serif;
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+    .header {
+      background: var(--bg2);
+      border-bottom: 1px solid var(--gold-border);
+      padding: 0 40px;
+      height: 70px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 2px 30px #00000088;
+    }
+
+    .header-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+
+    /* SVG LOGO — stylized M/chevron matching the gold emblem */
+    .logo-svg {
+      width: 44px;
+      height: 44px;
+      filter: drop-shadow(0 0 8px #f0a500aa);
+    }
+
+    .header-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 26px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      color: var(--gold);
+    }
+
+    .header-title span {
+      color: #fff;
+      opacity: 0.5;
+    }
+
+    .header-badge {
+      background: transparent;
+      border: 1px solid var(--gold-border);
+      color: var(--gold-dim);
+      padding: 3px 10px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-family: 'Rajdhani', sans-serif;
+      letter-spacing: 2px;
+    }
+
+    /* CONTAINER */
+    .container { padding: 36px 40px; max-width: 1200px; margin: 0 auto; }
+
+    /* LOAD BUTTON */
+    .load-btn {
+      background: linear-gradient(135deg, var(--gold), var(--gold-dim));
+      color: #000;
+      border: none;
+      padding: 12px 30px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 700;
+      font-family: 'Rajdhani', sans-serif;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      margin-bottom: 28px;
+      transition: all 0.2s;
+      box-shadow: 0 0 20px var(--gold-glow);
+    }
+    .load-btn:hover {
+      box-shadow: 0 0 30px #f0a50066;
+      transform: translateY(-1px);
+    }
+
+    /* VERDICT */
+    .verdict {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 22px 28px;
+      border-radius: 8px;
+      margin-bottom: 24px;
+      font-size: 18px;
+      font-weight: 700;
+      font-family: 'Rajdhani', sans-serif;
+      letter-spacing: 1px;
+    }
+    .verdict.clean {
+      background: #0a1f12;
+      border: 1px solid #2ecc7155;
+      border-left: 4px solid var(--green);
+      color: var(--green);
+    }
+    .verdict.flagged {
+      background: #1a0a0a;
+      border: 1px solid #e74c3c55;
+      border-left: 4px solid var(--red);
+      color: var(--red);
+    }
+
+    /* STATS */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .stat-card {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-top: 2px solid var(--gold-border);
+      border-radius: 8px;
+      padding: 22px 20px;
+      text-align: center;
+      transition: border-color 0.2s;
+    }
+    .stat-card:hover { border-top-color: var(--gold); }
+
+    .stat-card .number {
+      font-size: 36px;
+      font-weight: 700;
+      font-family: 'Rajdhani', sans-serif;
+      color: var(--gold);
+      line-height: 1;
+    }
+    .stat-card .number.red { color: var(--red); }
+    .stat-card .label {
+      font-size: 12px;
+      color: var(--text-dim);
+      margin-top: 6px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    /* SECTIONS */
+    .section {
+      background: var(--bg2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px;
+      margin-bottom: 20px;
+    }
+
+    .section-title {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--gold-dim);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-title::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border);
+    }
+
+    /* INFO GRID */
+    .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0 30px; }
+    .info-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 0;
+      border-bottom: 1px solid var(--border);
+    }
+    .info-row .key { color: var(--text-dim); font-size: 13px; }
+    .info-row .val { color: var(--text); font-size: 13px; font-weight: 500; }
+
+    /* FLAG ITEMS */
+    .flag-item {
+      background: #120a0a;
+      border: 1px solid #e74c3c22;
+      border-left: 3px solid var(--red);
+      border-radius: 6px;
+      padding: 14px 18px;
+      margin-bottom: 10px;
+      transition: background 0.2s;
+    }
+    .flag-item:hover { background: #1a0d0d; }
+    .flag-item .type {
+      font-size: 10px;
+      color: var(--red);
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      margin-bottom: 5px;
+      font-family: 'Rajdhani', sans-serif;
+    }
+    .flag-item .name { font-size: 14px; color: #fff; font-weight: 500; }
+    .flag-item .reason { font-size: 12px; color: var(--text-dim); margin-top: 4px; }
+
+    /* SCAN SESSIONS (from server mode) */
+    .session-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 16px 18px;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.15s;
+    }
+    .session-item:last-child { border-bottom: none; }
+    .session-item:hover { background: var(--bg3); }
+
+    .session-pin {
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--gold);
+      letter-spacing: 2px;
+    }
+    .session-meta { font-size: 12px; color: var(--text-dim); margin-top: 3px; }
+
+    .badge {
+      padding: 4px 12px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-family: 'Rajdhani', sans-serif;
+      font-weight: 600;
+      letter-spacing: 1px;
+      text-transform: uppercase;
+    }
+    .badge-scanned { background: #0a1f12; border: 1px solid #2ecc7144; color: var(--green); }
+    .badge-waiting { background: #1a150a; border: 1px solid var(--gold-border); color: var(--gold); }
+    .badge-flagged { background: #1a0a0a; border: 1px solid #e74c3c44; color: var(--red); }
+
+    /* DIVIDER LINE */
+    .gold-line {
+      height: 1px;
+      background: linear-gradient(90deg, transparent, var(--gold-border), transparent);
+      margin: 8px 0 24px;
+    }
+
+    @media (max-width: 768px) {
+      .container { padding: 20px; }
+      .stats { grid-template-columns: repeat(2, 1fr); }
+      .info-grid { grid-template-columns: 1fr; }
+      .header { padding: 0 20px; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-left">
+    <!-- Gold chevron/M logo SVG -->
+    <svg class="logo-svg" viewBox="0 0 100 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <linearGradient id="goldGrad" x1="0" y1="0" x2="100" y2="80" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stop-color="#ffe066"/>
+          <stop offset="50%" stop-color="#f0a500"/>
+          <stop offset="100%" stop-color="#c47f00"/>
+        </linearGradient>
+        <filter id="glow">
+          <feGaussianBlur stdDeviation="2.5" result="blur"/>
+          <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+        </filter>
+      </defs>
+      <!-- Outer chevron -->
+      <path d="M5 10 L50 58 L95 10 L85 10 L50 46 L15 10 Z" fill="url(#goldGrad)" filter="url(#glow)"/>
+      <!-- Inner chevron -->
+      <path d="M20 10 L50 40 L80 10 L70 10 L50 30 L30 10 Z" fill="url(#goldGrad)" opacity="0.7"/>
+      <!-- Bottom cap -->
+      <path d="M35 58 L50 72 L65 58 L58 58 L50 65 L42 58 Z" fill="url(#goldGrad)" filter="url(#glow)"/>
+    </svg>
+    <div class="header-title">STARK<span>.AC</span></div>
+  </div>
+  <div class="header-badge">ANTICHEAT</div>
+</div>
+
+<div class="container">
+  <button class="load-btn" onclick="loadResults()">▶ Load Scan Result</button>
+
+  <div id="content" style="display:none">
+
+    <div id="verdict" class="verdict"></div>
+    <div class="gold-line"></div>
+
+    <div class="stats">
+      <div class="stat-card">
+        <div class="number" id="stat-processes">0</div>
+        <div class="label">Processes</div>
+      </div>
+      <div class="stat-card">
+        <div class="number" id="stat-prefetch">0</div>
+        <div class="label">Prefetch Files</div>
+      </div>
+      <div class="stat-card">
+        <div class="number" id="stat-recent">0</div>
+        <div class="label">Recent Files</div>
+      </div>
+      <div class="stat-card">
+        <div class="number red" id="stat-flagged">0</div>
+        <div class="label">Flagged</div>
+      </div>
+    </div>
+
+    <div class="section">
+      <div class="section-title">Scan Info</div>
+      <div class="info-grid">
+        <div class="info-row"><span class="key">PC User</span><span class="val" id="info-user">—</span></div>
+        <div class="info-row"><span class="key">Scan Time</span><span class="val" id="info-time">—</span></div>
+      </div>
+    </div>
+
+    <div class="section" id="flagged-section" style="display:none">
+      <div class="section-title">Flagged Items</div>
+      <div id="flagged-list"></div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+function loadResults() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = '.json';
+  input.onchange = e => {
+    const file = e.target.files[0];
+    const reader = new FileReader();
+    reader.onload = ev => {
+      const data = JSON.parse(ev.target.result);
+      displayResults(data);
+    };
+    reader.readAsText(file);
+  };
+  input.click();
+}
+
+function displayResults(data) {
+  document.getElementById('content').style.display = 'block';
+
+  const verdict = document.getElementById('verdict');
+  if (data.clean) {
+    verdict.className = 'verdict clean';
+    verdict.innerHTML = '✔ CLEAN — No cheats detected';
+  } else {
+    verdict.className = 'verdict flagged';
+    verdict.innerHTML = `✘ FLAGGED — ${data.flagged.length} suspicious item${data.flagged.length !== 1 ? 's' : ''} found`;
+  }
+
+  document.getElementById('stat-processes').textContent = data.processes?.length || 0;
+  document.getElementById('stat-prefetch').textContent = data.prefetch?.length || 0;
+  document.getElementById('stat-recent').textContent = data.recent_files?.length || 0;
+  document.getElementById('stat-flagged').textContent = data.flagged?.length || 0;
+  document.getElementById('info-user').textContent = data.pc_user || '—';
+  document.getElementById('info-time').textContent = data.scan_time || '—';
+
+  if (data.flagged && data.flagged.length > 0) {
+    document.getElementById('flagged-section').style.display = 'block';
+    const list = document.getElementById('flagged-list');
+    list.innerHTML = '';
+    data.flagged.forEach(item => {
+      list.innerHTML += `
+        <div class="flag-item">
+          <div class="type">${item.type}</div>
+          <div class="name">${item.name}</div>
+          <div class="reason">${item.reason}</div>
+        </div>`;
+    });
+  }
+}
+</script>
+</body>
+</html>
